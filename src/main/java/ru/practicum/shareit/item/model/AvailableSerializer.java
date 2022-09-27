@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class StringBooleanSerializer extends JsonSerializer<String> {
+public class AvailableSerializer extends JsonSerializer<String> {
     @Override
-    public void serialize(String s, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        if (s.equals("true")) {
+    public void serialize(String available, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        if (available.equals("true")) {
             jsonGenerator.writeBoolean(true);
         } else {
             jsonGenerator.writeBoolean(false);

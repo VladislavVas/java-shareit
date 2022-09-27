@@ -1,81 +1,72 @@
 package ru.practicum.shareit.user;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.ConflictException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.userDto.UserDto;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
 @Repository
-public class UserStorageInMemory implements UserStorage {
-    private long id;
+public class UserStorageInMemory {
+    private long userId;
     private final List<UserDto> users = new ArrayList<>();
 
-    /**
-     * Возвращает список всех пользователей из памяти
-     */
-    @Override
-    public List<UserDto> getUserAll() {
+    public List<UserDto> getAllUsers() {
         return users;
     }
 
-    /**
-     * Возвращает пользователя по ID из памяти
-     */
-    @Override
     public UserDto getUserById(long id) {
+        log.info("UserStorage: Запрос пользователя id " + id);
         return users.stream()
                 .filter(p -> p.getId() == (id))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id %d не найден",
-                        id)));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь id " + id + "не найден")));
     }
 
-    /**
-     * Добавляет пользователя в память
-     */
-    @Override
-    public UserDto add(UserDto userDto) {
-        checkExistUserInList(userDto);
-        userDto.setId(generateId());
+    public UserDto addUser(UserDto userDto) {
+        checkExistUser(userDto);
+        userDto.setId(setUserId());
         users.add(userDto);
-
+        log.info("UserStorage: Создан пользователь id " + userDto.getId());
         return userDto;
     }
 
-    /**
-     * Обновляет пользователя в памяти
-     */
-    @Override
-    public UserDto update(long id, UserDto userDtoExisting, UserDto userDto) {
+    public UserDto updateUser(long id, UserDto userUpdate, UserDto userDto) {
         if (!(userDto.getEmail() == null)) {
-            checkExistUserInList(userDto);
-
-            userDtoExisting.setEmail(userDto.getEmail());
+            checkExistUser(userDto);
+            userUpdate.setEmail(userDto.getEmail());
+            log.info("UserStorage: Пользователю id " + id + " установлен email " + userDto.getEmail());
         }
         if (!(userDto.getName() == null)) {
-            userDtoExisting.setName(userDto.getName());
+            userUpdate.setName(userDto.getName());
+            log.info("UserStorage: Пользователю id " + id + " установлено имя " + userDto.getName());
         }
-        return userDtoExisting;
+        return userUpdate;
     }
 
-    /**
-     * Удаляет пользователя из памяти
-     */
-    @Override
-    public void delete(long id) {
-        for (UserDto userDtoExisting : users) {
-            if (userDtoExisting.getId() == id) {
-                users.remove(userDtoExisting);
+    public void deleteUser(long id) {
+        for (UserDto user : users) {
+            if (user.getId() == id) {
+                users.remove(user);
+                log.info("UserStorage: удаление пользователя id " + id);
                 return;
             }
         }
     }
 
-    public void checkExistUserInList(UserDto userDto) {
-        for (UserDto userDtoExisting : users) {
-            if (userDto.getEmail().equals(userDtoExisting.getEmail())) {
-                throw new ConflictException(HttpStatus.CONFLICT, String.format("Пользователь с email %s уже существует",
-                        userDto.getEmail()));
+    public void checkExistUser(UserDto userDto) {
+        for (UserDto userExist : users) {
+            if (userDto.getEmail().equals(userExist.getEmail())) {
+                throw new ConflictException("email " + userDto.getEmail() + " уже используется");
             }
         }
     }
 
-    long generateId() {
-        return ++id;
+    private long setUserId() {
+        return ++userId;
     }
 }

@@ -1,2 +1,12 @@
-package ru.practicum.shareit.item.dto;public class itemMapper {
+package ru.practicum.shareit.item.dto;
+
+import org.mapstruct.Mapper;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemDto;
+
+@Mapper
+public interface ItemMapper {
+    Item toItem(ItemDto dto);
+
+    ItemDto toDto(Item item);
 }
