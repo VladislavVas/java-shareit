@@ -8,9 +8,6 @@ import ru.practicum.shareit.item.model.AvailableSerializer;
 
 import javax.validation.constraints.NotBlank;
 
-/**
- * // TODO .
- */
 @Data
 @AllArgsConstructor
 @Builder
