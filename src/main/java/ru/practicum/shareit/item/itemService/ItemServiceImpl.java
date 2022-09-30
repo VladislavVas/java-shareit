@@ -36,7 +36,8 @@ public class ItemServiceImpl implements ItemService {
         userServiceImpl.getUser(userId);
         log.info("ItemService: обработка запроса на добавление вещи: " + itemDto.getName());
         Item item = mapper.toItem(itemDto);
-        return mapper.toDto(itemStorage.addItem(userId, item));
+        ItemDto dto = mapper.toDto(itemStorage.addItem(userId, item));
+        return dto;
     }
 
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
