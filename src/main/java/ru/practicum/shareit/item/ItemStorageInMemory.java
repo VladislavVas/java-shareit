@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Repository
 @Slf4j
 public class ItemStorageInMemory {
-    private long itemId = 1;
+    private long itemId;
     private final Map<Long, List<Item>> userItems = new HashMap<>();
 
     public List<Item> getItems(long userId) {
