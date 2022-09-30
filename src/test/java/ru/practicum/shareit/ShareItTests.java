@@ -52,7 +52,6 @@ class ShareItTests {
 	void testCreateUser() {
 		userController.createUser(userDto);
 		assertEquals(1, userController.getAllUsers().size());
-		assertEquals(1, userDto.getId());
 	}
 
 	@Test
