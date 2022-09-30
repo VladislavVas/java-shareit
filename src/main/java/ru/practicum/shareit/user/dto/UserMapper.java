@@ -2,8 +2,6 @@ package ru.practicum.shareit.user.dto;
 
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -14,7 +12,7 @@ public interface UserMapper {
 
     UserDto toDto(User user);
 
-    List<User> toListUser (List<UserDto> dtoList);
+    List<User> toListUser(List<UserDto> dtoList);
 
-    List<UserDto> toDtoList (List<User> userList);
+    List<UserDto> toDtoList(List<User> userList);
 }

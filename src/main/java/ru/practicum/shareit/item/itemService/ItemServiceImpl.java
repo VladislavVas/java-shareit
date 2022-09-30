@@ -3,10 +3,10 @@ package ru.practicum.shareit.item.itemService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.storage.ItemStorageInMemory;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.storage.ItemStorageInMemory;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.validation.ValidationException;

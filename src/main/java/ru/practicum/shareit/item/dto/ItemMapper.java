@@ -12,7 +12,7 @@ public interface ItemMapper {
 
     ItemDto toDto(Item item);
 
-    List<Item> toListItem (List<ItemDto> dtoList);
+    List<Item> toListItem(List<ItemDto> dtoList);
 
-    List<ItemDto> toDtoList (List<Item> itemList);
+    List<ItemDto> toDtoList(List<Item> itemList);
 }
