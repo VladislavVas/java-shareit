@@ -1,20 +1,20 @@
 package ru.practicum.shareit;
-
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import ru.practicum.shareit.item.controller.ItemController;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.controller.UserController;
-import ru.practicum.shareit.user.dto.UserDto;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@SpringBootTest
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+//
+//import lombok.RequiredArgsConstructor;
+//import org.junit.jupiter.api.Test;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.boot.test.context.SpringBootTest;
+//import org.springframework.test.annotation.DirtiesContext;
+//import ru.practicum.shareit.item.controller.ItemController;
+//import ru.practicum.shareit.item.dto.ItemDto;
+//import ru.practicum.shareit.user.controller.UserController;
+//import ru.practicum.shareit.user.dto.UserDto;
+//
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+//
+//@SpringBootTest
+//@RequiredArgsConstructor(onConstructor_ = @Autowired)
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ShareItTests {
 
 //	@Autowired
