@@ -2,9 +2,14 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.Create;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoForRequest;
 import ru.practicum.shareit.item.itemService.ItemServiceImpl;
+import ru.practicum.shareit.requests.dto.ItemRequestDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -18,13 +23,13 @@ public class ItemController {
     private final ItemServiceImpl itemServiceImpl;
 
     @GetMapping
-    public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemDtoForRequest> getItems(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("ItemController: GET-запрос всех вещей пользователя id " + userId);
         return itemServiceImpl.getAllItems(userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDtoForRequest getItem(@RequestHeader("X-Sharer-User-Id") long userId,
                            @PathVariable long itemId) {
         log.info("ItemController: GET-запрос вещи id " + itemId + " пользователя id " + userId);
         return itemServiceImpl.getItem(userId, itemId);
@@ -56,5 +61,12 @@ public class ItemController {
                            @PathVariable long itemId) {
         log.info("ItemController: DELETE-запрос на удаление вещи id " + itemId + "у пользователя " + userId);
         itemServiceImpl.deleteItem(userId, itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addCommentToItem(@Validated(Create.class) @RequestBody CommentDto commentDto,
+                                       @PathVariable long itemId,
+                                       @RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemServiceImpl.addCommentToItem(commentDto, itemId, userId);
     }
 }
