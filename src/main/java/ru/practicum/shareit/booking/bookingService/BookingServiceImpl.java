@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.storage.BookingStorage;
@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto addBooking(BookingRequestDto bookingRequestDto, long userId) {
         Item item = getItemFromStorage(bookingRequestDto.getItemId());
         User user = getUserFromStorage(userId);
-        if (validate(bookingRequestDto, item, user)){
+        if (validate(bookingRequestDto, item, user)) {
             Booking booking = BookingMapper.toBooking(bookingRequestDto, item, user);
             booking.setStatus(Status.WAITING);
             Booking result = bookingStorage.save(booking);
@@ -92,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
         getBookingFromStorage(bookingId);
         if (userStorage.findById(userId).isEmpty()) {
             throw new NotFoundException("Пользователя с id= " + userId +
-                    " или бронирования " + bookingId +" не существует");
+                    " или бронирования " + bookingId + " не существует");
         } else {
             Booking booking = getBookingFromStorage(bookingId);
             if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {

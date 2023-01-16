@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface BookingStorage extends JpaRepository<Booking, Long>  {
+public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     List<Booking> findBookingByBookerIdOrderByStartDesc(long bookerId);
 

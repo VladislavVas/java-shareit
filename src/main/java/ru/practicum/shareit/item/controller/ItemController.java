@@ -9,7 +9,6 @@ import ru.practicum.shareit.item.dto.Create;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForRequest;
 import ru.practicum.shareit.item.itemService.ItemServiceImpl;
-import ru.practicum.shareit.requests.dto.ItemRequestDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,7 +29,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDtoForRequest getItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @PathVariable long itemId) {
+                                     @PathVariable long itemId) {
         log.info("ItemController: GET-запрос вещи id " + itemId + " пользователя id " + userId);
         return itemServiceImpl.getItem(userId, itemId);
     }

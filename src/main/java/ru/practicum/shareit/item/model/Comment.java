@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.model.User;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -36,7 +37,7 @@ public class Comment {
     private LocalDateTime dateCreate;
 
     @PrePersist
-    protected void dateCreated () {
+    protected void dateCreated() {
         this.dateCreate = LocalDateTime.now();
     }
 }

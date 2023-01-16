@@ -69,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
         log.info("ItemService: обработка запроса на обновление вещи id " + itemId);
         Item itemExisting = getItemFromStorage(itemId);
-        if (itemExisting.getOwner().getId() == userId){
+        if (itemExisting.getOwner().getId() == userId) {
             if (itemDto.getName() != null) {
                 itemExisting.setName(itemDto.getName());
             }
@@ -93,8 +93,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public List<ItemDto> searchItemByText(String text) {
-        if (text.isBlank())
-        {
+        if (text.isBlank()) {
             return new ArrayList<>();
         }
         log.info("ItemService: обработка запроса на поиск вещи по тексту: " + text);
