@@ -28,7 +28,7 @@ create table if not exists bookings
     end_date   timestamp without time zone,
     item_id    bigint references items (item_id) on delete cascade,
     booker_id  bigint references users (user_id) on delete cascade,
-    status     int,
+    status     varchar(20),
     CONSTRAINT start_date_not_null CHECK (start_date IS NOT NULL),
     CONSTRAINT end_date_not_null CHECK (end_date IS NOT NULL),
     CONSTRAINT item_id_not_null CHECK (item_id IS NOT NULL),

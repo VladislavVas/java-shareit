@@ -21,10 +21,8 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@Transactional(readOnly = true)
 @AllArgsConstructor
 @Slf4j
 public class BookingServiceImpl implements BookingService {
@@ -58,49 +56,51 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     @Override
     public List<BookingResponseDto> getSortedListBookingByUserId(long bookerId, State state) {
-        User user = getUserFromStorage(bookerId);
-        List<Booking> bookings;
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        switch (state) {
-            case ALL:
-                bookings = bookingStorage.findBookingByBookerIdOrderByStartDesc(bookerId);
-                break;
-            case CURRENT:
-                bookings = bookingStorage.findBookingsCurrentForBooker(bookerId, LocalDateTime.now(), sort);
-                break;
-            case PAST:
-                bookings = bookingStorage.findBookingsPastForBooker(bookerId, LocalDateTime.now(), sort);
-                break;
-            case FUTURE:
-                bookings = bookingStorage.findBookingsFutureForBooker(bookerId, LocalDateTime.now(), sort);
-                break;
-            case WAITING:
-                bookings = bookingStorage.findBookingsByStatusAndBookerId(bookerId, Status.WAITING);
-                break;
-            case REJECTED:
-                bookings = bookingStorage.findBookingsByStatusAndBookerId(bookerId, Status.REJECTED);
-                break;
-            default:
-                throw new ValidateException("Unknown state: UNSUPPORTED_STATUS");
+        if (userStorage.existsById(bookerId)) {
+            List<Booking> bookings;
+            Sort sort = Sort.by(Sort.Direction.DESC, "start");
+            switch (state) {
+                case ALL:
+                    bookings = bookingStorage.findBookingByBookerIdOrderByStartDesc(bookerId);
+                    break;
+                case CURRENT:
+                    bookings = bookingStorage.findBookingsCurrentForBooker(bookerId, LocalDateTime.now(), sort);
+                    break;
+                case PAST:
+                    bookings = bookingStorage.findBookingsPastForBooker(bookerId, LocalDateTime.now(), sort);
+                    break;
+                case FUTURE:
+                    bookings = bookingStorage.findBookingsFutureForBooker(bookerId, LocalDateTime.now(), sort);
+                    break;
+                case WAITING:
+                    bookings = bookingStorage.findBookingsByStatusAndBookerId(bookerId, Status.WAITING);
+                    break;
+                case REJECTED:
+                    bookings = bookingStorage.findBookingsByStatusAndBookerId(bookerId, Status.REJECTED);
+                    break;
+                default:
+                    throw new ValidateException("Unknown state: UNSUPPORTED_STATUS");
+            }
+            return BookingMapper.toListBookingDto(bookings);
+        } else {
+            throw new NotFoundException(("Пользователя с id= " + bookerId + " не существует"));
         }
-        return BookingMapper.toListBookingDto(bookings);
     }
 
 
     @Override
     public BookingResponseDto getBookingByUserId(long bookingId, long userId) {
-        getUserFromStorage(userId);
-        getBookingFromStorage(bookingId);
-        if (userStorage.findById(userId).isEmpty()) {
-            throw new NotFoundException("Пользователя с id= " + userId +
-                    " или бронирования " + bookingId + " не существует");
+        if (!userStorage.existsById(userId)) {
+            throw new NotFoundException("Пользователя с id= " + userId + " не найден");
+        }
+        if (!bookingStorage.existsById(bookingId)) {
+            throw new NotFoundException("Бронирования с id= " + bookingId + " не существует");
+        }
+        Booking booking = getBookingFromStorage(bookingId);
+        if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
+            return BookingMapper.toBookingResponseDto(booking);
         } else {
-            Booking booking = getBookingFromStorage(bookingId);
-            if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
-                return BookingMapper.toBookingResponseDto(booking);
-            } else {
-                throw new NotFoundException("Пользователя с id= " + userId + " не существует");
-            }
+            throw new NotFoundException("Бронирование не найдено");
         }
     }
 
@@ -137,30 +137,18 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private User getUserFromStorage(long userId) {
-        Optional<User> user = userStorage.findById(userId);
-        if (user.isEmpty()) {
-            throw new NotFoundException("Пользователя с id= " + userId + " не существует");
-        } else {
-            return user.get();
-        }
+        return userStorage.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователя с id= " + userId + " не существует"));
     }
 
     private Item getItemFromStorage(long itemId) {
-        Optional<Item> item = itemStorage.findById(itemId);
-        if (item.isEmpty()) {
-            throw new NotFoundException("Вещь с id= " + itemId + " не существует");
-        } else {
-            return item.get();
-        }
+        return itemStorage.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Вещь с id= " + itemId + " не существует"));
     }
 
     private Booking getBookingFromStorage(long id) {
-        Optional<Booking> booking = bookingStorage.findById(id);
-        if (booking.isEmpty()) {
-            throw new NotFoundException("Бронирование с id= " + id + " не существует");
-        } else {
-            return booking.get();
-        }
+        return bookingStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Бронирование с id= " + id + " не существует"));
     }
 
     private boolean validate(BookingRequestDto bookingRequestDto, Item item, User booker) {

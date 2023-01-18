@@ -19,9 +19,9 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+
 
 @Slf4j
 @Service
@@ -30,25 +30,21 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
     private final ItemStorage itemStorage;
     private final BookingStorage bookingStorage;
-    private final ItemMapper itemMapper;
     private final CommentStorage commentStorage;
-    private final CommentMapper commentMapper;
 
 
     public List<ItemDtoForRequest> getAllItems(long userId) {
         log.info("ItemService: обработка запроса всех вещей пользователя id " + userId);
         User user = getUserFromStorage(userId);
-        List<ItemDtoForRequest> itemsDto = itemMapper.toListItemRequestDto(itemStorage.getItemsByOwner(user));
-        for (ItemDtoForRequest item : itemsDto) {
-            setBookingInDto(item);
-        }
-        Collections.sort(itemsDto, (a, b) -> a.getId() < b.getId() ? -1 : a.getId() == b.getId() ? 0 : 1);
+        List<ItemDtoForRequest> itemsDto = ItemMapper.toListItemRequestDto(itemStorage.getItemsByOwner(user));
+        itemsDto.forEach(this::setBookingInDto);
+        itemsDto.sort(Comparator.comparingLong(ItemDtoForRequest::getId));
         return itemsDto;
     }
 
     public ItemDtoForRequest getItem(long userId, long itemId) {
         Item item = getItemFromStorage(itemId);
-        ItemDtoForRequest itemDtoForRequest = itemMapper.toItemRequestDto(item);
+        ItemDtoForRequest itemDtoForRequest = ItemMapper.toItemRequestDto(item);
         addComments(List.of(itemDtoForRequest));
         log.info("ItemService: обработка запроса вещи id " + itemId + " у пользлвателя id " + userId);
         if (item.getOwner().getId() != userId) {
@@ -61,9 +57,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addNewItem(long userId, ItemDto itemDto) {
         User user = getUserFromStorage(userId);
         log.info("ItemService: обработка запроса на добавление вещи: " + itemDto.getName());
-        Item item = itemStorage.save(itemMapper.toItem(itemDto, user));
-        ItemDto dto = itemMapper.toDto(item);
-        return dto;
+        Item item = itemStorage.save(ItemMapper.toItem(itemDto, user));
+        return ItemMapper.toDto(item);
     }
 
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
@@ -79,14 +74,13 @@ public class ItemServiceImpl implements ItemService {
             if (itemDto.getAvailable() != null) {
                 itemExisting.setAvailable(itemDto.getAvailable());
             }
-            return itemMapper.toDto(itemStorage.save(itemExisting));
+            return ItemMapper.toDto(itemStorage.save(itemExisting));
         } else {
             throw new AccessException("Только собственник может обновлять вещь");
         }
     }
 
     public void deleteItem(long userId, long itemId) {
-        User user = getUserFromStorage(userId);
         Item item = getItemFromStorage(itemId);
         log.info("ItemService: обработка запроса на удаление вещи id " + userId);
         itemStorage.delete(item);
@@ -97,7 +91,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
         log.info("ItemService: обработка запроса на поиск вещи по тексту: " + text);
-        return itemMapper.toDtoList(itemStorage.searchItem(text));
+        return ItemMapper.toDtoList(itemStorage.searchItem(text));
     }
 
     @Transactional
@@ -105,8 +99,8 @@ public class ItemServiceImpl implements ItemService {
         Item item = getItemFromStorage(itemId);
         if (bookingStorage.isExists(itemId, userId, LocalDateTime.now())) {
             User author = getUserFromStorage(userId);
-            Comment comment = commentMapper.toComment(commentDto, item, author);
-            commentDto = commentMapper.toCommentDto(commentStorage.save(comment));
+            Comment comment = CommentMapper.toComment(commentDto, item, author);
+            commentDto = CommentMapper.toCommentDto(commentStorage.save(comment));
         } else {
             throw new ValidateException("Невозможно оставить комментарий");
         }
@@ -115,21 +109,13 @@ public class ItemServiceImpl implements ItemService {
 
 
     private Item getItemFromStorage(long id) {
-        Optional<Item> item = itemStorage.findById(id);
-        if (!item.isPresent()) {
-            throw new NotFoundException("Вещь с id= " + id + " не существует");
-        } else {
-            return item.get();
-        }
+        return itemStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Вещь с id= " + id + " не существует"));
     }
 
     private User getUserFromStorage(long id) {
-        Optional<User> user = userStorage.findById(id);
-        if (!user.isPresent()) {
-            throw new NotFoundException("Пользователя с id= " + id + " не существует");
-        } else {
-            return user.get();
-        }
+        return userStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователя с id= " + id + " не существует"));
     }
 
     private ItemDtoForRequest setBookingInDto(ItemDtoForRequest itemDtoForRequest) {
@@ -138,10 +124,10 @@ public class ItemServiceImpl implements ItemService {
         Booking nextBooking = bookingStorage.findBookingByItemWithDateAfter(itemDtoForRequest.getId(),
                 LocalDateTime.now());
         if (lastBooking != null) {
-            itemDtoForRequest.setLastBooking(itemMapper.setBookingToItemDto(lastBooking));
+            itemDtoForRequest.setLastBooking(ItemMapper.setBookingToItemDto(lastBooking));
         }
         if (nextBooking != null) {
-            itemDtoForRequest.setNextBooking(itemMapper.setBookingToItemDto(nextBooking));
+            itemDtoForRequest.setNextBooking(ItemMapper.setBookingToItemDto(nextBooking));
         }
         return itemDtoForRequest;
     }
@@ -150,7 +136,7 @@ public class ItemServiceImpl implements ItemService {
         List<Comment> comments;
         for (ItemDtoForRequest item : items) {
             comments = commentStorage.findByItemId(item.getId());
-            item.setComments(commentMapper.toListDto(comments));
+            item.setComments(CommentMapper.toListDto(comments));
         }
     }
 }

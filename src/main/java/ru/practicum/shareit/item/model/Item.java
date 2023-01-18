@@ -7,9 +7,9 @@ import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "items")
-@EqualsAndHashCode
 @ToString
 @Builder
 public class Item {
@@ -17,7 +17,6 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
-    @EqualsAndHashCode.Exclude
     private long id;
 
     @Column(name = "item_name")
@@ -31,7 +30,6 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
-    @EqualsAndHashCode.Exclude
     private User owner;
 
     public Item() {

@@ -14,14 +14,12 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @ToString
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Exclude
     @Column(name = "booking_id")
     private long id;
 
@@ -44,6 +42,6 @@ public class Booking {
     private User booker;
 
     @Column(name = "status", nullable = false, unique = false)
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Status status;
 }
