@@ -3,64 +3,140 @@ package ru.practicum.shareit.item.itemService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.exception.AccessException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidateException;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorageInMemory;
-import ru.practicum.shareit.user.service.UserServiceImpl;
+import ru.practicum.shareit.item.storage.CommentStorage;
+import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.storage.UserStorage;
 
-import javax.validation.ValidationException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final UserServiceImpl userServiceImpl;
-    private final ItemStorageInMemory itemStorage;
-    private final ItemMapper mapper;
+    private final UserStorage userStorage;
+    private final ItemStorage itemStorage;
+    private final BookingStorage bookingStorage;
+    private final CommentStorage commentStorage;
 
-    public List<ItemDto> getAllItems(long userId) {
+
+    public List<ItemDtoForRequest> getAllItems(long userId) {
         log.info("ItemService: обработка запроса всех вещей пользователя id " + userId);
-        return mapper.toDtoList(itemStorage.getItems(userId));
+        User user = getUserFromStorage(userId);
+        List<ItemDtoForRequest> itemsDto = ItemMapper.toListItemRequestDto(itemStorage.getItemsByOwner(user));
+        itemsDto.forEach(this::setBookingInDto);
+        itemsDto.sort(Comparator.comparingLong(ItemDtoForRequest::getId));
+        return itemsDto;
     }
 
-    public ItemDto getItem(long userId, long itemId) {
-        validate(itemId);
+    public ItemDtoForRequest getItem(long userId, long itemId) {
+        Item item = getItemFromStorage(itemId);
+        ItemDtoForRequest itemDtoForRequest = ItemMapper.toItemRequestDto(item);
+        addComments(List.of(itemDtoForRequest));
         log.info("ItemService: обработка запроса вещи id " + itemId + " у пользлвателя id " + userId);
-        return mapper.toDto(itemStorage.getItem(itemId));
+        if (item.getOwner().getId() != userId) {
+            return itemDtoForRequest;
+        } else {
+            return setBookingInDto(itemDtoForRequest);
+        }
     }
 
     public ItemDto addNewItem(long userId, ItemDto itemDto) {
-        userServiceImpl.getUser(userId);
+        User user = getUserFromStorage(userId);
         log.info("ItemService: обработка запроса на добавление вещи: " + itemDto.getName());
-        Item item = mapper.toItem(itemDto);
-        ItemDto dto = mapper.toDto(itemStorage.addItem(userId, item));
-        return dto;
+        Item item = itemStorage.save(ItemMapper.toItem(itemDto, user));
+        return ItemMapper.toDto(item);
     }
 
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
-        Item itemExisting = itemStorage.getItem(itemId);
         log.info("ItemService: обработка запроса на обновление вещи id " + itemId);
-        Item updateItem = itemStorage.updateItem(userId, itemExisting, mapper.toItem(itemDto));
-        return mapper.toDto(updateItem);
+        Item itemExisting = getItemFromStorage(itemId);
+        if (itemExisting.getOwner().getId() == userId) {
+            if (itemDto.getName() != null) {
+                itemExisting.setName(itemDto.getName());
+            }
+            if (itemDto.getDescription() != null) {
+                itemExisting.setDescription(itemDto.getDescription());
+            }
+            if (itemDto.getAvailable() != null) {
+                itemExisting.setAvailable(itemDto.getAvailable());
+            }
+            return ItemMapper.toDto(itemStorage.save(itemExisting));
+        } else {
+            throw new AccessException("Только собственник может обновлять вещь");
+        }
     }
 
     public void deleteItem(long userId, long itemId) {
-        validate(userId);
-        validate(itemId);
+        Item item = getItemFromStorage(itemId);
         log.info("ItemService: обработка запроса на удаление вещи id " + userId);
-        itemStorage.deleteItem(userId, itemId);
+        itemStorage.delete(item);
     }
 
     public List<ItemDto> searchItemByText(String text) {
+        if (text.isBlank()) {
+            return new ArrayList<>();
+        }
         log.info("ItemService: обработка запроса на поиск вещи по тексту: " + text);
-        return mapper.toDtoList(itemStorage.searchItem(text));
+        return ItemMapper.toDtoList(itemStorage.searchItem(text));
     }
 
-    private void validate(long id) {
-        if (id <= 0) {
-            throw new ValidationException("Неверно указан id");
+    @Transactional
+    public CommentDto addCommentToItem(CommentDto commentDto, long itemId, long userId) {
+        Item item = getItemFromStorage(itemId);
+        if (bookingStorage.isExists(itemId, userId, LocalDateTime.now())) {
+            User author = getUserFromStorage(userId);
+            Comment comment = CommentMapper.toComment(commentDto, item, author);
+            commentDto = CommentMapper.toCommentDto(commentStorage.save(comment));
+        } else {
+            throw new ValidateException("Невозможно оставить комментарий");
+        }
+        return commentDto;
+    }
+
+
+    private Item getItemFromStorage(long id) {
+        return itemStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Вещь с id= " + id + " не существует"));
+    }
+
+    private User getUserFromStorage(long id) {
+        return userStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователя с id= " + id + " не существует"));
+    }
+
+    private ItemDtoForRequest setBookingInDto(ItemDtoForRequest itemDtoForRequest) {
+        Booking lastBooking = bookingStorage.findBookingByItemWithDateBefore(itemDtoForRequest.getId(),
+                LocalDateTime.now());
+        Booking nextBooking = bookingStorage.findBookingByItemWithDateAfter(itemDtoForRequest.getId(),
+                LocalDateTime.now());
+        if (lastBooking != null) {
+            itemDtoForRequest.setLastBooking(ItemMapper.setBookingToItemDto(lastBooking));
+        }
+        if (nextBooking != null) {
+            itemDtoForRequest.setNextBooking(ItemMapper.setBookingToItemDto(nextBooking));
+        }
+        return itemDtoForRequest;
+    }
+
+    private void addComments(List<ItemDtoForRequest> items) {
+        List<Comment> comments;
+        for (ItemDtoForRequest item : items) {
+            comments = commentStorage.findByItemId(item.getId());
+            item.setComments(CommentMapper.toListDto(comments));
         }
     }
 }
