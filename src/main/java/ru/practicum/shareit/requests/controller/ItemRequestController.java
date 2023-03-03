@@ -34,6 +34,7 @@ public class ItemRequestController {
         log.info("ItemRequestController: GET всех запросов");
         return itemRequestService.getAllRequests(requesterId, from, size);
     }
+
     @GetMapping
     public List<ItemRequestDto> getAllRequestsForRequester(@RequestHeader("X-Sharer-User-Id") long requesterId) {
         log.info("ItemRequestController: GET всех запросов для пользователя id=" + requesterId);
@@ -43,7 +44,7 @@ public class ItemRequestController {
 
     @GetMapping("{requestId}")
     public ItemRequestDto getRequestById(@PathVariable long requestId,
-                                        @RequestHeader("X-Sharer-User-Id") long userId) {
+                                         @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("ItemRequestController: GET запроса id=" + requestId);
         return itemRequestService.getRequest(requestId, userId);
     }

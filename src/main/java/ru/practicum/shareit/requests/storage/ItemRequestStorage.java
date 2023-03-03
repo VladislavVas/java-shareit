@@ -16,5 +16,6 @@ import java.util.List;
 public interface ItemRequestStorage extends JpaRepository<ItemRequest, Long> {
     @Query(value = "from ItemRequest where requester.id <> :requesterId")
     List<ItemRequest> findAllByRequesterIdNotEquals(@Param("requesterId") long requester, Pageable pageable);
+
     List<ItemRequest> findAllByRequester(User requester, Sort sort);
 }

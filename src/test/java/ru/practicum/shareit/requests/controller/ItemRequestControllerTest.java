@@ -69,8 +69,8 @@ class ItemRequestControllerTest {
     void getAllRequestsForRequester() throws Exception {
         requestsList = List.of(itemRequest);
         when(requestService.getAllRequestsForRequester(anyLong())).thenReturn(requestsList);
-        mvc.perform(                 get("/requests")
-                                .header("X-Sharer-User-Id", 1L))
+        mvc.perform(get("/requests")
+                        .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1));
     }

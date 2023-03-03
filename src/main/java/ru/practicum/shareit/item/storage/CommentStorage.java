@@ -13,5 +13,6 @@ import java.util.List;
 public interface CommentStorage extends JpaRepository<Comment, Long> {
     @Query("from Comment c where c.item.id = :itemId")
     List<Comment> findByItemId(@Param("itemId") long itemId);
+
     List<Comment> findByItemIn(Collection<Item> item, Sort by);
 }

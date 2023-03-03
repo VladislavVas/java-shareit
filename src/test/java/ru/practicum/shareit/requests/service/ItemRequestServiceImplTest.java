@@ -74,7 +74,7 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getRequest() {
-        ItemRequestDto result = itemRequestService.getRequest(1L,1L);
+        ItemRequestDto result = itemRequestService.getRequest(1L, 1L);
         assertEquals(1L, result.getId());
         assertEquals(1L, result.getRequesterId());
         assertEquals("description", result.getDescription());

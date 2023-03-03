@@ -19,9 +19,4 @@ public class ItemRequestDto {
     private LocalDateTime created = LocalDateTime.now();
     private List<ItemDto> items = new ArrayList<>();
 
-
-//    @PrePersist
-//    protected void dateCreated() {
-//        this.date = LocalDateTime.now();
-//    }
 }

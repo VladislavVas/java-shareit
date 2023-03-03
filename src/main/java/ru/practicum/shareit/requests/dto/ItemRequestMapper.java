@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class ItemRequestMapper {
 
 
-
     public static ItemRequest toItemRequest(ItemRequestDto itemRequestDto, User requester) {
         return ItemRequest.builder()
                 .date(itemRequestDto.getCreated())

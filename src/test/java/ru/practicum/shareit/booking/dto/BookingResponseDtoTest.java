@@ -5,14 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.item.dto.ItemDtoForRequest;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 class BookingResponseDtoTest {
@@ -21,7 +18,7 @@ class BookingResponseDtoTest {
     private BookingResponseDto bookingResponseDto;
 
     @Test
-    void setBookingResponseDtoTest () throws IOException {
+    void setBookingResponseDtoTest() throws IOException {
         bookingResponseDto = BookingResponseDto.builder()
                 .id(1L)
                 .item(new BookingResponseDto.ItemBooking(1L, "item"))

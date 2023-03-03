@@ -26,7 +26,7 @@ class ItemRequestStorageTest {
 
     private User user;
     private ItemRequest itemRequest;
-    private List <ItemRequest> itemRequestList;
+    private List<ItemRequest> itemRequestList;
 
 
     @BeforeEach

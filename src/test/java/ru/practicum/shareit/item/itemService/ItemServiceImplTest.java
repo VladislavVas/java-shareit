@@ -15,7 +15,8 @@ import ru.practicum.shareit.user.service.UserServiceImpl;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -58,14 +59,14 @@ class ItemServiceImplTest {
     void getAllItems() {
         itemService.addNewItem(1, itemDto1);
         itemService.addNewItem(1, itemDto2);
-        assertEquals(2, itemService.getAllItems(1, 0,20).size());
+        assertEquals(2, itemService.getAllItems(1, 0, 20).size());
     }
 
 
     @Test
     void getItem() {
         itemService.addNewItem(1, itemDto1);
-        ItemDtoForRequest itemDto = itemService.getItem(1,1);
+        ItemDtoForRequest itemDto = itemService.getItem(1, 1);
         assertEquals(1, itemDto.getId());
         assertEquals("itemDto_1_name", itemDto.getName());
     }
@@ -82,9 +83,9 @@ class ItemServiceImplTest {
     @Test
     void addNewItem() {
         itemService.addNewItem(1, itemDto1);
-        ItemDtoForRequest itemDto = itemService.getItem(1,1);
-        assertEquals(1, itemService.getAllItems(1,0,20).size());
-        assertEquals(1,itemDto.getId());
+        ItemDtoForRequest itemDto = itemService.getItem(1, 1);
+        assertEquals(1, itemService.getAllItems(1, 0, 20).size());
+        assertEquals(1, itemDto.getId());
     }
 
     @Test
@@ -95,9 +96,9 @@ class ItemServiceImplTest {
     @Test
     void deleteItem() {
         itemService.addNewItem(1, itemDto1);
-        assertEquals(1, itemService.getAllItems(1,0,20).size());
-        itemService.deleteItem(1,1);
-        assertEquals(0,itemService.getAllItems(1,0,20).size());
+        assertEquals(1, itemService.getAllItems(1, 0, 20).size());
+        itemService.deleteItem(1, 1);
+        assertEquals(0, itemService.getAllItems(1, 0, 20).size());
     }
 
     @Test
