@@ -127,4 +127,47 @@ class BookingServiceImplTest {
         assertThat(e.getMessage()).contains(
                 String.format("Unknown state: UNSUPPORTED_STATUS"));
     }
+
+    @Test
+    void getListBookingByOwnerCurrentState() {
+        bookingRequestDto.setStart(LocalDateTime.of(2000, 01, 01, 01, 01));
+        bookingRequestDto.setEnd(LocalDateTime.of(2030, 01, 01, 01, 01));
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.CURRENT, 0, 20));
+
+    }
+
+    @Test
+    void getListBookingByOwnerPastState() {
+        bookingRequestDto.setStart(LocalDateTime.of(2000, 01, 01, 01, 01));
+        bookingRequestDto.setEnd(LocalDateTime.of(2001, 01, 01, 01, 01));
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.PAST, 0, 20));
+
+    }
+
+    @Test
+    void getListBookingByOwnerFutureState(){
+        bookingRequestDto.setStart(LocalDateTime.of(2029,01,01,01,01));
+        bookingRequestDto.setEnd(LocalDateTime.of(2030,01,01,01,01));
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.FUTURE, 0, 20));
+
+    }
+
+    @Test
+    void getListBookingByOwnerWaitingState(){
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.WAITING, 0, 20));
+
+    }
+
 }
+//bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+//        bookingsList = List.of(bookingResponseDto);
+//        assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(user2.getId(),
+//        State.ALL, 0, 20));
