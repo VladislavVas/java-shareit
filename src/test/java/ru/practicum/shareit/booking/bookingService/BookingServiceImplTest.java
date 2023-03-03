@@ -52,15 +52,6 @@ class BookingServiceImplTest {
                 .end(LocalDateTime.of(2025, 02, 01, 01, 01))
                 .itemId(1L)
                 .build();
-
-//        bookingResponseDto = BookingResponseDto.builder()
-//                .id(1l)
-//                .start(LocalDateTime.of(2025, 01, 01, 01, 01))
-//                .end(LocalDateTime.of(2025, 02, 01, 01, 01))
-//                .booker(null)
-//                .item(null)
-//                .status(Status.WAITING)
-//                .build();
         userDto = UserDto.builder()
                 .email("test@test.ru")
                 .name("testName")
@@ -79,8 +70,6 @@ class BookingServiceImplTest {
         user1 = UserMapper.toUser(userService.addUser(userDto));
         user2 = UserMapper.toUser(userService.addUser(userDto2));
         item = ItemMapper.toItem(itemService.addNewItem(1L, itemDto), user1, null);
-
-//        bookingResponseDto = bookingService.addBooking()
     }
 
     @Test
