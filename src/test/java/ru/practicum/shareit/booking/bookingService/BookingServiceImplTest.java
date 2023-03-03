@@ -129,41 +129,90 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getListBookingByOwnerCurrentState() {
+    void getListBookingByUserIdWithException() {
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        ValidateException e = assertThrows(ValidateException.class,
+                () -> bookingService.getSortedListBookingByUserId(user2.getId(),
+                        State.UNSUPPORTED_STATUS, 0, 20));
+        assertThat(e.getMessage()).contains(
+                String.format("Unknown state: UNSUPPORTED_STATUS"));
+    }
+
+    @Test
+    void getSortedListBookingByUserIdCurrentState() {
         bookingRequestDto.setStart(LocalDateTime.of(2000, 01, 01, 01, 01));
         bookingRequestDto.setEnd(LocalDateTime.of(2030, 01, 01, 01, 01));
         bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
         bookingsList = List.of(bookingResponseDto);
         assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.CURRENT, 0, 20));
-
     }
 
     @Test
-    void getListBookingByOwnerPastState() {
+    void getSortedListBookingByUserIdPastState() {
         bookingRequestDto.setStart(LocalDateTime.of(2000, 01, 01, 01, 01));
         bookingRequestDto.setEnd(LocalDateTime.of(2001, 01, 01, 01, 01));
         bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
         bookingsList = List.of(bookingResponseDto);
         assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.PAST, 0, 20));
-
     }
 
     @Test
-    void getListBookingByOwnerFutureState() {
+    void getSortedListBookingByUserIdFutureState() {
         bookingRequestDto.setStart(LocalDateTime.of(2029, 01, 01, 01, 01));
         bookingRequestDto.setEnd(LocalDateTime.of(2030, 01, 01, 01, 01));
         bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
         bookingsList = List.of(bookingResponseDto);
         assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.FUTURE, 0, 20));
-
     }
 
     @Test
-    void getListBookingByOwnerWaitingState() {
+    void getSortedListBookingByUserIdWaitingState() {
         bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
         bookingsList = List.of(bookingResponseDto);
         assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.WAITING, 0, 20));
+    }
 
+    @Test
+    void getSortedListBookingByOwnerIdWaitingState() {
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getListBookingByOwnerId(1L, State.WAITING, 0, 20));
+    }
+
+    @Test
+    void getSortedListBookingByOwnerIdFutureState() {
+        bookingRequestDto.setStart(LocalDateTime.of(2029, 01, 01, 01, 01));
+        bookingRequestDto.setEnd(LocalDateTime.of(2030, 01, 01, 01, 01));
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getListBookingByOwnerId(1L, State.FUTURE, 0, 20));
+    }
+
+    @Test
+    void getSortedListBookingByOwnerIdPastState() {
+        bookingRequestDto.setStart(LocalDateTime.of(2000, 01, 01, 01, 01));
+        bookingRequestDto.setEnd(LocalDateTime.of(2001, 01, 01, 01, 01));
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getListBookingByOwnerId(1L, State.PAST, 0, 20));
+    }
+
+    @Test
+    void getSortedListBookingByOwnerIdCurrentState() {
+        bookingRequestDto.setStart(LocalDateTime.of(2000, 01, 01, 01, 01));
+        bookingRequestDto.setEnd(LocalDateTime.of(2030, 01, 01, 01, 01));
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getListBookingByOwnerId(1L, State.CURRENT, 0, 20));
+    }
+
+    @Test
+    void testWrongPage() {
+        ValidateException e = assertThrows(ValidateException.class,
+                () -> bookingService.getListBookingByOwnerId(user1.getId(),
+                        State.ALL, -1, -1));
+        assertThat(e.getMessage()).contains(
+                String.format("Неверные параметры page или size"));
     }
 
 }

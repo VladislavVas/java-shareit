@@ -163,4 +163,13 @@ class ItemServiceImplTest {
         assertEquals(1, result.getId());
         assertEquals("text", result.getText());
     }
+
+    @Test
+    void testWrongPage() {
+        itemService.addNewItem(1, itemDto1);
+        ValidateException e = assertThrows(ValidateException.class,
+                () -> itemService.getAllItems(1, -1, -1));
+        assertThat(e.getMessage()).contains(
+                String.format("Неверные параметры page или size"));
+    }
 }
