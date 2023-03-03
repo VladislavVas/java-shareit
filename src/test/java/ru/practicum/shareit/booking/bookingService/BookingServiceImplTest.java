@@ -149,9 +149,9 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getListBookingByOwnerFutureState(){
-        bookingRequestDto.setStart(LocalDateTime.of(2029,01,01,01,01));
-        bookingRequestDto.setEnd(LocalDateTime.of(2030,01,01,01,01));
+    void getListBookingByOwnerFutureState() {
+        bookingRequestDto.setStart(LocalDateTime.of(2029, 01, 01, 01, 01));
+        bookingRequestDto.setEnd(LocalDateTime.of(2030, 01, 01, 01, 01));
         bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
         bookingsList = List.of(bookingResponseDto);
         assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.FUTURE, 0, 20));
@@ -159,7 +159,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getListBookingByOwnerWaitingState(){
+    void getListBookingByOwnerWaitingState() {
         bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
         bookingsList = List.of(bookingResponseDto);
         assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.WAITING, 0, 20));
@@ -167,7 +167,3 @@ class BookingServiceImplTest {
     }
 
 }
-//bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
-//        bookingsList = List.of(bookingResponseDto);
-//        assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(user2.getId(),
-//        State.ALL, 0, 20));
