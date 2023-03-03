@@ -9,6 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.itemService.ItemServiceImpl;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -114,5 +116,15 @@ class BookingServiceImplTest {
         bookingsList = List.of(bookingResponseDto);
         assertEquals(bookingsList, bookingService.getListBookingByOwnerId(user1.getId(),
                 State.ALL, 0, 20));
+    }
+
+    @Test
+    void getListBookingByOwnerIdWithException() {
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        ValidateException e = assertThrows(ValidateException.class,
+                () -> bookingService.getListBookingByOwnerId(user1.getId(),
+                        State.UNSUPPORTED_STATUS, 0, 20));
+        assertThat(e.getMessage()).contains(
+                String.format("Unknown state: UNSUPPORTED_STATUS"));
     }
 }
