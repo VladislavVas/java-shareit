@@ -63,12 +63,6 @@ public class  ItemController {
         return itemServiceImpl.updateItem(userId, itemId, itemDto);
     }
 
-    @DeleteMapping("/{itemId}")
-    public void deleteItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @PathVariable long itemId) {
-        log.info("ItemController: DELETE-запрос на удаление вещи id " + itemId + "у пользователя " + userId);
-        itemServiceImpl.deleteItem(userId, itemId);
-    }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addCommentToItem(@Validated(Create.class) @RequestBody CommentDto commentDto,

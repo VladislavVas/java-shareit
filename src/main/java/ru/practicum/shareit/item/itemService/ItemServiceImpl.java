@@ -89,11 +89,6 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    public void deleteItem(long userId, long itemId) {
-        Item item = getItemFromStorage(itemId);
-        log.info("ItemService: обработка запроса на удаление вещи id " + userId);
-        itemStorage.delete(item);
-    }
 
     public List<ItemDto> searchItemByText(String text, int from, int size) {
         if (text.isBlank()) {

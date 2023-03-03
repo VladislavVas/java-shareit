@@ -131,13 +131,6 @@ class ItemServiceImplTest {
                 String.format("Только собственник может обновлять вещь"));
     }
 
-    @Test
-    void deleteItem() {
-        itemService.addNewItem(1, itemDto1);
-        assertEquals(1, itemService.getAllItems(1, 0, 20).size());
-        itemService.deleteItem(1, 1);
-        assertEquals(0, itemService.getAllItems(1, 0, 20).size());
-    }
 
     @Test
     void searchItemByText() {

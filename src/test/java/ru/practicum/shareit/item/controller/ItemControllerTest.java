@@ -7,18 +7,28 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.booking.bookingService.State;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForRequest;
 import ru.practicum.shareit.item.itemService.ItemServiceImpl;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +38,8 @@ class ItemControllerTest {
 
     @MockBean
     private ItemServiceImpl itemService;
+    @MockBean
+    private UserServiceImpl userService;
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -56,6 +68,7 @@ class ItemControllerTest {
                 .authorName("itemDto_1_name")
                 .text("commentText")
                 .build();
+
     }
 
     @Test
@@ -137,4 +150,5 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())))
                 .andExpect(jsonPath("$.text", is(commentDto.getText())));
     }
+
 }
