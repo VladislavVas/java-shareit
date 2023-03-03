@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.bookingService.BookingServiceImpl;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
-import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidateException;
@@ -75,8 +74,8 @@ class ItemServiceImplTest {
         bookingDto = BookingRequestDto.builder()
                 .itemId(1L)
                 .itemId(1L)
-                .start(LocalDateTime.of(2020,01,01,01,01))
-                .end(LocalDateTime.of(2020,02,01,01,01))
+                .start(LocalDateTime.of(2020, 01, 01, 01, 01))
+                .end(LocalDateTime.of(2020, 02, 01, 01, 01))
                 .build();
         userService.addUser(userDto);
         userService.addUser(userDto2);
@@ -160,7 +159,7 @@ class ItemServiceImplTest {
     void addCommentToItem() {
         itemService.addNewItem(1L, itemDto2);
         bookingService.addBooking(bookingDto, 2L);
-        CommentDto result = itemService.addCommentToItem(commentDto,1L,2L);
+        CommentDto result = itemService.addCommentToItem(commentDto, 1L, 2L);
         assertEquals(1, result.getId());
         assertEquals("text", result.getText());
     }
