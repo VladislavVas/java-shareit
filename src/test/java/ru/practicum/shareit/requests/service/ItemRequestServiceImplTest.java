@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.practicum.shareit.booking.bookingService.State;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidateException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -13,7 +16,9 @@ import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -78,5 +83,21 @@ class ItemRequestServiceImplTest {
         assertEquals(1L, result.getId());
         assertEquals(1L, result.getRequesterId());
         assertEquals("description", result.getDescription());
+    }
+
+    @Test
+    void getRequestWithException() {
+        NotFoundException e = assertThrows(NotFoundException.class,
+                () -> itemRequestService.getRequest(1L, 0L));
+        assertThat(e.getMessage()).contains(
+                String.format("Пользователя с id= " + 0 + " не существует"));
+    }
+
+    @Test
+    void testWrongPage() {
+        ValidateException e = assertThrows(ValidateException.class,
+                () -> itemRequestService.getAllRequests(userDto.getId(), -1, -1));
+        assertThat(e.getMessage()).contains(
+                String.format("Неверные параметры page или size"));
     }
 }
