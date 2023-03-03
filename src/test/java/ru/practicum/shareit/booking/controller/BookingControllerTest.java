@@ -44,7 +44,7 @@ class BookingControllerTest {
                 .build();
 
         bookingResponseDto = BookingResponseDto.builder()
-                .id(1l)
+                .id(1L)
                 .start(LocalDateTime.of(2025, 01, 01, 01, 01))
                 .end(LocalDateTime.of(2025, 02, 01, 01, 01))
                 .booker(null)

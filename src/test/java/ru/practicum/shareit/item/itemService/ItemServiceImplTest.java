@@ -90,6 +90,9 @@ class ItemServiceImplTest {
 
     @Test
     void updateItem() {
+        itemService.addNewItem(1, itemDto1);
+        itemService.updateItem(1,1,itemDto2);
+        assertEquals("itemDto_2_name",itemService.getItem(1,1).getName());
 
     }
 

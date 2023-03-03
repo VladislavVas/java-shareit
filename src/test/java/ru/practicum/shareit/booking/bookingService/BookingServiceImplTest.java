@@ -76,7 +76,7 @@ class BookingServiceImplTest {
     void addBooking() {
         bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
         assertThat(bookingResponseDto.getId()).isNotZero();
-        assertThat(bookingResponseDto.getBooker().getId()).isEqualTo(2l);
+        assertThat(bookingResponseDto.getBooker().getId()).isEqualTo(2L);
         assertThat(bookingResponseDto.getBooker().getName()).isEqualTo("bookerName");
         assertThat(bookingResponseDto.getStart()).isEqualTo("2025-01-01T01:01:00");
         assertThat(bookingResponseDto.getEnd()).isEqualTo("2025-02-01T01:01:00");

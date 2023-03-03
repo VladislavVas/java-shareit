@@ -41,8 +41,7 @@ public class ItemServiceImpl implements ItemService {
         log.info("ItemService: обработка запроса всех вещей пользователя id " + userId);
         User user = getUserFromStorage(userId);
         int page = getPage(from, size);
-        List<ItemDtoForRequest> itemsDto = ItemMapper.toListItemDtoForRequest(itemStorage.getItemsByOwner
-                (PageRequest.of(page, size, Sort.by("id")), user));
+        List<ItemDtoForRequest> itemsDto = ItemMapper.toListItemDtoForRequest(itemStorage.getItemsByOwner(PageRequest.of(page, size, Sort.by("id")), user));
         itemsDto.forEach(this::setBookingInDto);
         return itemsDto;
     }
