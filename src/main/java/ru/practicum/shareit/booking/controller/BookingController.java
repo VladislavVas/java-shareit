@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
@@ -44,15 +45,19 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingResponseDto> getListBookingByOwnerId(
             @RequestParam(name = "state", required = false, defaultValue = "ALL") State state,
-            @RequestHeader("X-Sharer-User-Id") long ownerId) {
-        return bookingService.getListBookingByOwnerId(ownerId, state);
+            @RequestHeader("X-Sharer-User-Id") long ownerId,
+            @RequestParam(value = "from", required = false, defaultValue = "0") int from,
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size) {
+        return bookingService.getListBookingByOwnerId(ownerId, state, from, size);
     }
 
     @GetMapping()
     public List<BookingResponseDto> getSortedListBookingByUserId(
             @RequestParam(name = "state", required = false, defaultValue = "ALL") State state,
-            @RequestHeader("X-Sharer-User-Id") long bookerId) {
-        return bookingService.getSortedListBookingByUserId(bookerId, state);
+            @RequestHeader("X-Sharer-User-Id") long bookerId,
+            @RequestParam(value = "from", required = false, defaultValue = "0") int from,
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size) {
+        return bookingService.getSortedListBookingByUserId(bookerId, state, from, size);
     }
 
 }

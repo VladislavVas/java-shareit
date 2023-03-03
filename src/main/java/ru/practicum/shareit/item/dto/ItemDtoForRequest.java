@@ -14,18 +14,13 @@ import java.util.List;
 @Builder
 public class ItemDtoForRequest {
     private long id;
-
     private String name;
-
     private String description;
-
     private Boolean available;
-
     private BookingDto lastBooking;
-
     private BookingDto nextBooking;
-
     private List<CommentDto> comments;
+    private Long requestId;
 
     @Data
     public static class BookingDto {

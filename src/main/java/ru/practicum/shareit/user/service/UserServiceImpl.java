@@ -49,7 +49,11 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public void deleteUser(long userId) {
-        userStorage.deleteById(userId);
+        if (userStorage.existsById(userId)) {
+            userStorage.deleteById(userId);
+        } else {
+            throw new NotFoundException("Пользователь не найден");
+        }
     }
 
     private User getUserFromStorage(long id) {

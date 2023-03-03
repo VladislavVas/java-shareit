@@ -1,12 +1,14 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
+import ru.practicum.shareit.requests.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Table(name = "items")
@@ -32,7 +34,16 @@ public class Item {
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
     private User owner;
 
-    public Item() {
+    @ManyToOne
+    @JoinColumn(name = "request_id", referencedColumnName = "request_id")
+    private ItemRequest itemRequest;
 
+    public Item(String name, String description, Boolean available, User owner, ItemRequest itemRequest) {
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+        this.itemRequest = itemRequest;
     }
 }
+
