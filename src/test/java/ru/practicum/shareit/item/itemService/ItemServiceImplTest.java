@@ -6,12 +6,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.practicum.shareit.booking.bookingService.BookingServiceImpl;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
+import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidateException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,10 +34,15 @@ class ItemServiceImplTest {
     private UserServiceImpl userService;
     @Autowired
     private ItemServiceImpl itemService;
+    @Autowired
+    private BookingServiceImpl bookingService;
 
     private ItemDto itemDto1;
     private ItemDto itemDto2;
     private UserDto userDto;
+    private UserDto userDto2;
+    private CommentDto commentDto;
+    private BookingRequestDto bookingDto;
 
     @BeforeEach
     void getEntities() {
@@ -51,7 +63,23 @@ class ItemServiceImplTest {
                 .email("test@test.ru")
                 .name("testName")
                 .build();
+        userDto2 = UserDto.builder()
+                .email("booker@test.ru")
+                .name("bookerName")
+                .build();
+        commentDto = CommentDto.builder()
+                .text("text")
+                .authorName("itemDto_2_name")
+                .dateCreate(LocalDateTime.now())
+                .build();
+        bookingDto = BookingRequestDto.builder()
+                .itemId(1L)
+                .itemId(1L)
+                .start(LocalDateTime.of(2020,01,01,01,01))
+                .end(LocalDateTime.of(2020,02,01,01,01))
+                .build();
         userService.addUser(userDto);
+        userService.addUser(userDto2);
     }
 
 
@@ -91,9 +119,17 @@ class ItemServiceImplTest {
     @Test
     void updateItem() {
         itemService.addNewItem(1, itemDto1);
-        itemService.updateItem(1,1,itemDto2);
-        assertEquals("itemDto_2_name",itemService.getItem(1,1).getName());
+        itemService.updateItem(1, 1, itemDto2);
+        assertEquals("itemDto_2_name", itemService.getItem(1, 1).getName());
+    }
 
+    @Test
+    void updateItemWithExeption() {
+        itemService.addNewItem(1, itemDto1);
+        AccessException e = assertThrows(AccessException.class,
+                () -> itemService.updateItem(2, 1, itemDto2));
+        assertThat(e.getMessage()).contains(
+                String.format("Только собственник может обновлять вещь"));
     }
 
     @Test
@@ -109,5 +145,23 @@ class ItemServiceImplTest {
         itemService.addNewItem(1, itemDto1);
         List<ItemDto> itemDto = itemService.searchItemByText("itemDto_1_name", 0, 20);
         assertEquals(1, itemDto.get(0).getId());
+    }
+
+    @Test
+    void addCommentToItemWithException() {
+        itemService.addNewItem(1L, itemDto1);
+        ValidateException e = assertThrows(ValidateException.class,
+                () -> itemService.addCommentToItem(commentDto, 1L, 1L));
+        assertThat(e.getMessage()).contains(
+                String.format("Невозможно оставить комментарий"));
+    }
+
+    @Test
+    void addCommentToItem() {
+        itemService.addNewItem(1L, itemDto2);
+        bookingService.addBooking(bookingDto, 2L);
+        CommentDto result = itemService.addCommentToItem(commentDto,1L,2L);
+        assertEquals(1, result.getId());
+        assertEquals("text", result.getText());
     }
 }
