@@ -180,6 +180,22 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void getSortedListBookingByOwnerIdRejectedState() {
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingResponseDto = bookingService.approveBooking(1L, false, 1L);
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getListBookingByOwnerId(1L, State.REJECTED, 0, 20));
+    }
+
+    @Test
+    void getSortedListBookingByUserIdRejectedState() {
+        bookingResponseDto = bookingService.addBooking(bookingRequestDto, user2.getId());
+        bookingResponseDto = bookingService.approveBooking(1L, false, 1L);
+        bookingsList = List.of(bookingResponseDto);
+        assertEquals(bookingsList, bookingService.getSortedListBookingByUserId(2L, State.REJECTED, 0, 20));
+    }
+
+    @Test
     void getSortedListBookingByOwnerIdFutureState() {
         bookingRequestDto.setStart(LocalDateTime.of(2029, 01, 01, 01, 01));
         bookingRequestDto.setEnd(LocalDateTime.of(2030, 01, 01, 01, 01));
