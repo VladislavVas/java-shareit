@@ -46,9 +46,9 @@ class ItemStorageTest {
 
     @Test
     void getItemsByOwner() {
-        List<Item> items = itemStorage.getItemsByOwner(PageRequest.of(0, 20), user1);
+        List<Item> items = itemStorage.getItemsByOwner(user1, PageRequest.of(0, 20));
         assertThat(items).hasSize(1).contains(item);
-        items = itemStorage.getItemsByOwner(PageRequest.of(0, 20), user2);
+        items = itemStorage.getItemsByOwner(user2, PageRequest.of(0, 20));
         assertThat(items).isEmpty();
     }
 

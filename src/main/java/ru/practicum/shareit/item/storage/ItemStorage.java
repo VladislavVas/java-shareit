@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface ItemStorage extends JpaRepository<Item, Long> {
 
-    List<Item> getItemsByOwner(Pageable pageable, User user);
+    List<Item> getItemsByOwner(User user, Pageable pageable );
 
     @Query("select i from Item i " +
             "where (lower(i.name) like concat('%', lower(:text),'%') " +
