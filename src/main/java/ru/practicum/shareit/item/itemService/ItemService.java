@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ItemService {
 
-    List<ItemDtoForRequest> getAllItems(long userId);
+    List<ItemDtoForRequest> getAllItems(long userId, int from, int size);
 
     ItemDtoForRequest getItem(long userId, long itemId);
 
@@ -15,8 +15,6 @@ public interface ItemService {
 
     ItemDto updateItem(long userId, long itemId, ItemDto itemDto);
 
-    void deleteItem(long userId, long itemId);
-
-    List<ItemDto> searchItemByText(String text);
+    List<ItemDto> searchItemByText(String text, int from, int size);
 }
 

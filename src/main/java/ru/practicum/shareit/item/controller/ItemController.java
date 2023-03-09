@@ -17,14 +17,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 @AllArgsConstructor
-public class ItemController {
+public class  ItemController {
 
     private final ItemServiceImpl itemServiceImpl;
 
     @GetMapping
-    public List<ItemDtoForRequest> getItems(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemDtoForRequest> getItems(@RequestHeader("X-Sharer-User-Id") long userId,
+                                            @RequestParam(value = "from", required = false, defaultValue = "0")
+                                            int from,
+                                            @RequestParam(value = "size", required = false, defaultValue = "20")
+                                            int size) {
         log.info("ItemController: GET-запрос всех вещей пользователя id " + userId);
-        return itemServiceImpl.getAllItems(userId);
+        return itemServiceImpl.getAllItems(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -35,9 +39,13 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestParam String text) {
+    public List<ItemDto> searchItem(@RequestParam String text,
+                                    @RequestParam(value = "from", required = false, defaultValue = "0")
+                                    int from,
+                                    @RequestParam(value = "size", required = false, defaultValue = "20")
+                                    int size) {
         log.info("ItemController: GET-запрос вещи по описанию: " + text);
-        return itemServiceImpl.searchItemByText(text);
+        return itemServiceImpl.searchItemByText(text, from, size);
     }
 
     @PostMapping
@@ -55,12 +63,6 @@ public class ItemController {
         return itemServiceImpl.updateItem(userId, itemId, itemDto);
     }
 
-    @DeleteMapping("/{itemId}")
-    public void deleteItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @PathVariable long itemId) {
-        log.info("ItemController: DELETE-запрос на удаление вещи id " + itemId + "у пользователя " + userId);
-        itemServiceImpl.deleteItem(userId, itemId);
-    }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addCommentToItem(@Validated(Create.class) @RequestBody CommentDto commentDto,
