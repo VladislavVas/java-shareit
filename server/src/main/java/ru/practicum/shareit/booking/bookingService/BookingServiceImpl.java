@@ -37,7 +37,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto addBooking(BookingRequestDto bookingRequestDto, long userId) {
         Item item = getItemFromStorage(bookingRequestDto.getItemId());
         User user = getUserFromStorage(userId);
-        if (validate(bookingRequestDto, item, user)) {
+        if (validate(item, user)) {
             Booking booking = BookingMapper.toBooking(bookingRequestDto, item, user);
             booking.setStatus(Status.WAITING);
             Booking result = bookingStorage.save(booking);
@@ -166,12 +166,8 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Бронирование с id= " + id + " не существует"));
     }
 
-    private boolean validate(BookingRequestDto bookingRequestDto, Item item, User booker) {
-        LocalDateTime start = bookingRequestDto.getStart();
-        LocalDateTime end = bookingRequestDto.getEnd();
-        if (end.isBefore(start) && !start.isEqual(end)) {
-            throw new ValidateException("Дата окончания бронирования не может быть раньше даты начала бронирования");
-        } else if (item.getAvailable().equals(false)) {
+    private boolean validate(Item item, User booker) {
+         if (item.getAvailable().equals(false)) {
             throw new ValidateException(String.format("Вещь id = " + item.getId() + " недоступна"));
         } else if (item.getOwner().getId() == booker.getId()) {
             throw new NotFoundException("Собственник не может забронировать свою вещь");
