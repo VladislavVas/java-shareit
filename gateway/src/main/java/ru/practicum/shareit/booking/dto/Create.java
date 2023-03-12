@@ -1,4 +1,4 @@
 package ru.practicum.shareit.booking.dto;
 
-public class Create {
+public interface Create {
 }
