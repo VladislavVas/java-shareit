@@ -40,7 +40,7 @@ public class BookingClient extends BaseClient {
     public ResponseEntity<Object> addBooking(BookItemRequestDto bookingRequestDto, long userId) {
         LocalDateTime start = bookingRequestDto.getStart();
         LocalDateTime end = bookingRequestDto.getEnd();
-        if (!start.isBefore(end) || start.isBefore(LocalDateTime.now())) {
+        if (start == null || end == null || !start.isBefore(end) || start.isBefore(LocalDateTime.now())) {
             throw new ValidateException("Ошибка валидации. Проверьте дату, доступность и владельца вещи");
         }
         return post("", userId, bookingRequestDto);

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exception.AccessException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -134,10 +135,14 @@ public class ItemServiceImpl implements ItemService {
         Booking nextBooking = bookingStorage.findBookingByItemWithDateAfter(itemDtoForRequest.getId(),
                 LocalDateTime.now());
         if (lastBooking != null) {
-            itemDtoForRequest.setLastBooking(ItemMapper.setBookingToItemDto(lastBooking));
+            if (lastBooking.getStatus() != Status.REJECTED) {
+                itemDtoForRequest.setLastBooking(ItemMapper.setBookingToItemDto(lastBooking));
+            }
         }
         if (nextBooking != null) {
-            itemDtoForRequest.setNextBooking(ItemMapper.setBookingToItemDto(nextBooking));
+            if (nextBooking.getStatus() != Status.REJECTED) {
+                itemDtoForRequest.setNextBooking(ItemMapper.setBookingToItemDto(nextBooking));
+            }
         }
         return itemDtoForRequest;
     }

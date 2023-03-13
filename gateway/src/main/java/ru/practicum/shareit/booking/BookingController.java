@@ -10,8 +10,8 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/bookings")
-@Validated
 @Slf4j
+@Validated
 public class BookingController {
     private final BookingClient bookingClient;
 
@@ -21,7 +21,7 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<Object> addBooking(@RequestHeader("X-Sharer-User-Id") long userId,
-                                             @Valid @RequestBody BookItemRequestDto bookingRequestDto) {
+                                             @RequestBody @Valid  BookItemRequestDto bookingRequestDto) {
         log.info("BookingController: POST запрос на бронирование");
         return bookingClient.addBooking(bookingRequestDto, userId);
     }

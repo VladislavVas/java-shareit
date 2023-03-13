@@ -34,11 +34,11 @@ public class Comment {
     private User author;
 
     @Column(name = "date_create")
-    private LocalDateTime dateCreate;
+    private LocalDateTime created;
 
     @PrePersist
     protected void dateCreated() {
-        this.dateCreate = LocalDateTime.now();
+        this.created = LocalDateTime.now();
     }
 }
 

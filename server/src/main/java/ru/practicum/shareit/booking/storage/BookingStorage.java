@@ -58,7 +58,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     boolean isFree(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("itemId") long itemId);
 
     @Query(value = "select * from bookings b " +
-            "where b.item_id = :itemId and b.start_date < :date order by b.start_date limit  1",
+            "where b.item_id = :itemId and b.start_date < :date order by b.booking_id desc limit  1",
             nativeQuery = true)
     Booking findBookingByItemWithDateBefore(@Param("itemId") long itemId, @Param("date") LocalDateTime date);
 
