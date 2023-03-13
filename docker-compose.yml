@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
 
   postgres:
     image: postgres:14.6-alpine
