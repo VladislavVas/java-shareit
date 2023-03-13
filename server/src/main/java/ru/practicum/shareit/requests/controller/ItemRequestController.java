@@ -2,9 +2,7 @@ package ru.practicum.shareit.requests.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.Create;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.service.ItemRequestServiceImpl;
 
@@ -20,7 +18,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") long requesterId,
-                                     @Validated(Create.class) @RequestBody ItemRequestDto itemRequestDto) {
+                                     @RequestBody ItemRequestDto itemRequestDto) {
         log.info("ItemRequestController: POST на добавление нового запроса");
         return itemRequestService.addRequest(itemRequestDto, requesterId);
     }

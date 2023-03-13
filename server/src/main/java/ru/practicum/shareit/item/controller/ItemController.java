@@ -2,22 +2,19 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.Create;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoForRequest;
 import ru.practicum.shareit.item.itemService.ItemServiceImpl;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/items")
 @AllArgsConstructor
-public class  ItemController {
+public class ItemController {
 
     private final ItemServiceImpl itemServiceImpl;
 
@@ -50,7 +47,7 @@ public class  ItemController {
 
     @PostMapping
     public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                           @Valid @RequestBody ItemDto itemDto) {
+                           @RequestBody ItemDto itemDto) {
         log.info("ItemController: POST-запрос на добавление вещи пользователю id " + userId);
         return itemServiceImpl.addNewItem(userId, itemDto);
     }
@@ -65,7 +62,7 @@ public class  ItemController {
 
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addCommentToItem(@Validated(Create.class) @RequestBody CommentDto commentDto,
+    public CommentDto addCommentToItem(@RequestBody CommentDto commentDto,
                                        @PathVariable long itemId,
                                        @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemServiceImpl.addCommentToItem(commentDto, itemId, userId);
