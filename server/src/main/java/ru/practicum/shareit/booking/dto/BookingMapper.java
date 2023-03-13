@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 @Component
 public class BookingMapper {
 
-    public static Booking toBooking(BookingRequestDto bookingRequestDto, Item item, User booker) {
+    public static Booking toBooking(BookItemRequestDto bookItemRequestDto, Item item, User booker) {
         return Booking.builder()
-                .start(bookingRequestDto.getStart())
-                .end(bookingRequestDto.getEnd())
+                .start(bookItemRequestDto.getStart())
+                .end(bookItemRequestDto.getEnd())
                 .item(item)
                 .booker(booker).build();
 

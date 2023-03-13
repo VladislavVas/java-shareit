@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -34,11 +34,11 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingResponseDto addBooking(BookingRequestDto bookingRequestDto, long userId) {
-        Item item = getItemFromStorage(bookingRequestDto.getItemId());
+    public BookingResponseDto addBooking(BookItemRequestDto bookItemRequestDto, long userId) {
+        Item item = getItemFromStorage(bookItemRequestDto.getItemId());
         User user = getUserFromStorage(userId);
-        if (validate(bookingRequestDto, item, user)) {
-            Booking booking = BookingMapper.toBooking(bookingRequestDto, item, user);
+        if (validate(bookItemRequestDto, item, user)) {
+            Booking booking = BookingMapper.toBooking(bookItemRequestDto, item, user);
             booking.setStatus(Status.WAITING);
             Booking result = bookingStorage.save(booking);
             return BookingMapper.toBookingResponseDto(result);
@@ -166,9 +166,9 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Бронирование с id= " + id + " не существует"));
     }
 
-    private boolean validate(BookingRequestDto bookingRequestDto, Item item, User booker) {
-        LocalDateTime start = bookingRequestDto.getStart();
-        LocalDateTime end = bookingRequestDto.getEnd();
+    private boolean validate(BookItemRequestDto bookItemRequestDto, Item item, User booker) {
+        LocalDateTime start = bookItemRequestDto.getStart();
+        LocalDateTime end = bookItemRequestDto.getEnd();
         if (end.isBefore(start) && !start.isEqual(end)) {
             throw new ValidateException("Дата окончания бронирования не может быть раньше даты начала бронирования");
         } else if (item.getAvailable().equals(false)) {
